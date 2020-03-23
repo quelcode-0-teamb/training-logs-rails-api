@@ -49,3 +49,7 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
 # bullet
 gem 'bullet'
+
+group :test do
+  gem 'rspec_junit_formatter'
+end

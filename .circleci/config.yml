@@ -24,7 +24,7 @@ jobs:
       - image: circleci/postgres:11.6-alpine
         environment:
           POSTGRES_USER: postgres
-          POSTGRES_DB: training_logs_api_test
+          POSTGRES_DB: training_logs_rails_api_test
     steps:
       - checkout
       - run:
@@ -33,15 +33,15 @@ jobs:
 
       - restore_cache:
           keys:
-            - training_logs_api-{{ checksum "Gemfile.lock" }}
-            - training_logs_api
+            - training_logs_rails_api-{{ checksum "Gemfile.lock" }}
+            - training_logs_rails_api
 
       - run:
           name: Bundle Install
           command: bundle check || bundle install --deployment
 
       - save_cache:
-          key: training_logs_api-{{ checksum "Gemfile.lock" }}
+          key: training_logs_rails_api-{{ checksum "Gemfile.lock" }}
           paths:
             - vendor/bundle
 

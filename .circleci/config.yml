@@ -5,6 +5,14 @@ workflows:
   rspec_auto:
     jobs:
       - build
+      - deploy-dev: # Workflow に付けるユニークな名前
+          requires: # ジョブの開始までに完了させるべきジョブのリストを指定
+            - build # develoy-devはbuildの後に実行を定義
+          filters: # 実行するブランチを定義付けするマップを設定
+            branches: # 実行する特定のブランチを定義するマップを設定
+              only: # 単独のブランチ名、もしくはブランチ名のリストを指定
+                - develop #ブランチ
+
 
 jobs:
   build:

@@ -1,0 +1,71 @@
+version: 2.1
+orbs:
+  heroku: circleci/heroku@1.0.1
+workflows:
+  rspec_auto:
+    jobs:
+      - build
+
+jobs:
+  build:
+    working_directory: ~/repo
+    docker:
+      # Language: Ruby
+      - image: circleci/ruby:2.6.3
+        environment:
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+          RAILS_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
+          REVIEWDOG_VERSION: 0.9.11
+      # DB: PostgreSQL
+      - image: circleci/postgres:11.6-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: training_logs_api_test
+    steps:
+      - checkout
+      - run:
+          name: Install bundler
+          command: gem install bundler:2.1.4
+
+      - restore_cache:
+          keys:
+            - training_logs_api-{{ checksum "Gemfile.lock" }}
+            - training_logs_api
+
+      - run:
+          name: Bundle Install
+          command: bundle check || bundle install --deployment
+
+      - save_cache:
+          key: training_logs_api-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - run:
+          name: Database setup
+          command: bundle exec rails db:schema:load
+
+      - run:
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            bundle exec rspec --profile 10 \
+                        --format RspecJunitFormatter \
+                        --out /tmp/test_results/rspec.xml \
+                        --format progress \
+                        $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+      - run:
+          name: Run rubocop
+          command: bundle exec rubocop

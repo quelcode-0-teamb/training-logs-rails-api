@@ -7,17 +7,13 @@ class Score < ApplicationRecord
   def self.add_exercise_to_scores(score_params, set_num, exercise_id, user)
     # フロント側の負担が多すぎるのでサーバー側でeachを使い処理しました。(アンチパターンだと思うけど。。)
     check_sets(set_num)
-    score_array = []
     ActiveRecord::Base.transaction do
       (1..set_num).each do
-        score = Score.new(score_params)
-        score.user = user
+        score = user.scores.new(score_params)
         score.exercise = Exercise.find(exercise_id)
         score.save!
-        score_array << score
       end
     end
-    ActiveModel::Serializer::CollectionSerializer.new(score_array, serializer: ScoreSerializer)
   end
 
   def self.add_routine_scores(routine_score_params, user)

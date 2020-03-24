@@ -25,7 +25,6 @@ RSpec.describe 'exercises', type: :request do
     end
     it { is_expected.to eq 201 }
     it { expect { subject }.to change(Exercise, :count).by(+1) }
-    it { expect(res_body.length).to eq 6 }
   end
 
   describe '/exercises GET' do

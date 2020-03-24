@@ -4,9 +4,7 @@ class MeasuresController < ApplicationController
 
   # 計測記録の作成
   def create
-    measure = Measure.new(measure_params)
-    measure.user = current_user
-    measure.save!
+    current_user.measures.create(measure_params)
     render status: :created
   end
 

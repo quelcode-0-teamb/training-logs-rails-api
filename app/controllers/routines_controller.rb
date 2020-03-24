@@ -3,9 +3,7 @@ class RoutinesController < ApplicationController
   before_action :check_auth_user, only: %i[destroy update show]
 
   def create
-    routine = Routine.new(routine_params)
-    routine.user = current_user
-    routine.save!
+    current_user.routines.create(routine_params)
     render status: :created
   end
 

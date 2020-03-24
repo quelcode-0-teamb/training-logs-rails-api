@@ -17,18 +17,18 @@ RSpec.describe 'exercises', type: :request do
     end
     before do
       @params = {
-        "sets": 3,
         "score_params": {
           "weight": 10,
           "repetitions": 3,
           "interval_time": 30,
           "rpe": 60,
+          "sets": 2,
           "date": '2020/1/10'
         }
       }
     end
     it { is_expected.to eq 201 }
-    it { expect { subject }.to change(Score, :count).by(+@params[:sets]) }
+    it { expect { subject }.to change(Score, :count).by(+@params[:score_params][:sets]) }
   end
 
   describe '/scores/:score_id DELETE' do

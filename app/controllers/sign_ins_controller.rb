@@ -10,8 +10,7 @@ class SignInsController < ApplicationController
   def sign_in_params
     params.require(:sign_in_params).permit(
       :sign_in_text,
-      :password,
-      :password_confirmation
+      :password
     )
   end
 

@@ -3,8 +3,8 @@ class ExercisesController < ApplicationController
   before_action :check_auth_user, only: %i[destroy update]
 
   def create
-    exercise = current_user.exercises.create(exercise_params)
-    render json: exercise, status: :created
+    current_user.exercises.create(exercise_params)
+    render status: :created
   end
 
   def destroy

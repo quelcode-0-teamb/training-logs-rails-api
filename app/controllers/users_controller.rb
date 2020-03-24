@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   before_action :authorize!, only: %i[update destroy show]
-  before_action :check_auth_user, only: %i[update destroy]
 
   def top
     readme_url = 'https://mukimukiroku.herokuapp.com/'
@@ -9,16 +8,13 @@ class UsersController < ApplicationController
 
   # ユーザー情報変更
   def update
-    check_params_present(user_update_params)
-    user = User.find(params[:id])
-    user.update!(@params_array)
-    render json: user
+    current_user.update!(check_params_present(user_update_params))
+    render status: :ok
   end
 
   # ユーザー消去
   def destroy
-    user = User.find(params[:id])
-    user.destroy!
+    current_user.destroy!
     render status: :no_content
   end
 
@@ -35,12 +31,6 @@ class UsersController < ApplicationController
   end
 
   private
-
-  def check_auth_user
-    return if current_user == User.find(params[:id])
-
-    raise ActionController::BadRequest, 'ユーザーが違います！'
-  end
 
   def user_update_params
     params.require(:user_update_params).permit(

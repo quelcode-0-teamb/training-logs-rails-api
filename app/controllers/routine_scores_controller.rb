@@ -1,5 +1,6 @@
 class RoutineScoresController < ApplicationController
   before_action :authorize!, only: %i[index]
+
   def index
     Score.add_routine_scores(params[:routine_score_params], current_user)
     render status: :created

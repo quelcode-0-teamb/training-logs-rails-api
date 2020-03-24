@@ -21,8 +21,6 @@ class ApplicationController < ActionController::API
     return unless current_user == user
 
     return if user.user_private
-
-    # return if current_user.following?(user)
   end
 
   private

@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
   before_action :authorize!, only: %i[update destroy show]
-  before_action :set_user, only: %i[update destroy show]
   before_action :check_auth_user, only: %i[update destroy]
 
   def top
@@ -11,24 +10,25 @@ class UsersController < ApplicationController
   # ユーザー情報変更
   def update
     check_params_present(user_update_params)
-    @user.update!(@params_array)
-    render json: @user
+    user = User.find(params[:id])
+    user.update!(@params_array)
+    render json: user
   end
 
   # ユーザー消去
   def destroy
     user = User.find(params[:id])
     user.destroy!
-    # render status: :no_content
+    render status: :no_content
   end
 
   def show
-    response = if @current_user == @user
-                 UserSerializer.new(@current_user)
+    response = if current_user == User.find(params[:id])
+                 UserSerializer.new(current_user)
                else
                  {
-                   "user": OtherUserSerializer.new(@user),
-                   "follow_status": @current_user.follow_status(@user)
+                   "user": OtherUserSerializer.new(User.find(params[:id])),
+                   "follow_status": current_user.follow_status(User.find(params[:id]))
                  }
                end
     render json: response.as_json
@@ -37,7 +37,7 @@ class UsersController < ApplicationController
   private
 
   def check_auth_user
-    return if @current_user == @user
+    return if current_user == User.find(params[:id])
 
     raise ActionController::BadRequest, 'ユーザーが違います！'
   end
@@ -48,9 +48,5 @@ class UsersController < ApplicationController
       :email,
       :user_private
     )
-  end
-
-  def set_user
-    @user = User.find(params[:id])
   end
 end

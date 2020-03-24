@@ -1,6 +1,5 @@
 class ScoresController < ApplicationController
   before_action :authorize!
-  before_action :set_score, only: %i[destroy update]
   before_action :check_auth_user, only: %i[destroy update]
   def create
     set_num = params[:sets].to_i
@@ -10,12 +9,13 @@ class ScoresController < ApplicationController
 
   def update
     check_params_present(score_params)
-    @score.update!(@params_array)
-    render json: @score.as_json
+    score = Score.find(params[:id])
+    score.update!(@params_array)
+    render json: score
   end
 
   def destroy
-    @score.destroy!
+    Score.find(params[:id]).destroy!
     render status: :no_content
   end
 
@@ -31,12 +31,8 @@ class ScoresController < ApplicationController
     )
   end
 
-  def set_score
-    @score = Score.find(params[:id])
-  end
-
   def check_auth_user
-    return if current_user.id == @score.user_id
+    return if current_user.id == Score.find(params[:id]).user_id
 
     raise ActionController::BadRequest, 'この項目は変更、削除できません！'
   end

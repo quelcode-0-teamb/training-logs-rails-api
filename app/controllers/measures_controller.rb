@@ -1,6 +1,5 @@
 class MeasuresController < ApplicationController
   before_action :authorize!
-  before_action :check_auth_user, only: %i[destroy update]
 
   # 計測記録の作成
   def create
@@ -16,19 +15,12 @@ class MeasuresController < ApplicationController
 
   # 計測記録の作成
   def update
-    check_params_present(measure_params)
-    measure = Measure.find(params[:id])
-    measure.update!(@params_array)
-    render json: measure
+    measure = current_user.measures.find(params[:id])
+    measure.update!(check_params_present(measure_params))
+    render status: :ok
   end
 
   private
-
-  def check_auth_user
-    return if current_user.id == Measure.find(params[:id]).user_id
-
-    raise ActionController::BadRequest, 'この記録はnameが違うので変更、削除できません！'
-  end
 
   def measure_params
     params.require(:measure_params).permit(

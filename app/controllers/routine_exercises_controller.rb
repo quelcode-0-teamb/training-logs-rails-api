@@ -1,13 +1,12 @@
 class RoutineExercisesController < ApplicationController
   before_action :authorize!
-  before_action :check_auth_user
 
   def create
-    render json: RoutineExercise.add_exercises(Routine.find(params[:id]), routine_exercise_params), status: :created
+    render json: RoutineExercise.add_exercises(current_user.routines.find(params[:id]), routine_exercise_params), status: :created
   end
 
   def destroy
-    exercise = RoutineExercise.find(params[:routine_exercise_id])
+    exercise = current_user.routine_exercises.find(params[:routine_exercise_id])
     exercise.destroy!
     render :no_content
   end
@@ -16,11 +15,5 @@ class RoutineExercisesController < ApplicationController
 
   def routine_exercise_params
     params.require(:routine_exercise_params)
-  end
-
-  def check_auth_user
-    return if current_user.id == Routine.find(params[:id]).user_id
-
-    raise ActionController::BadRequest, 'ユーザーが違います！'
   end
 end

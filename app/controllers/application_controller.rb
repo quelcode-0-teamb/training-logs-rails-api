@@ -26,10 +26,11 @@ class ApplicationController < ActionController::API
   private
 
   def check_params_present(update_params)
-    @params_array = {}
+    params_array = {}
     update_params.each do |key, value|
-      @params_array[key] = value if value.present?
+      params_array[key] = value if value.present?
     end
+    params_array
   end
 
   def bearer_token

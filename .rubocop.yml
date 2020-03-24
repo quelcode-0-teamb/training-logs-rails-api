@@ -67,7 +67,7 @@ Style/HashTransformValues:
 
 # 行の長さを変更
 Layout/LineLength:
-  Max: 120
+  Max: 130
   IgnoredPatterns: ['\A#'] # コメントは除外
 
 # 自動生成ファイル除外
@@ -86,7 +86,7 @@ Metrics/MethodLength:
 
 # Classの長さ
 Metrics/ClassLength:
-  Max: 120
+  Max: 125
 
 # Blockの長さ 自動生成ファイルとspec除外
 Metrics/BlockLength:

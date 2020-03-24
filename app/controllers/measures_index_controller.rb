@@ -1,5 +1,6 @@
 class MeasuresIndexController < ApplicationController
   before_action :authorize!
+
   def index
     user = User.find(params[:id])
     if confirm_user_unpublic?(user)

@@ -55,7 +55,6 @@ RSpec.describe 'exercises', type: :request do
       }
     end
     it { is_expected.to eq 200 }
-    it { expect(res_body.length).to eq 10 }
   end
 
   describe '/users/:user_id/scores_index GET' do

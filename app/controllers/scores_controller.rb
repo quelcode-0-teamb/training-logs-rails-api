@@ -1,6 +1,6 @@
 class ScoresController < ApplicationController
   before_action :authorize!
-  before_action :check_auth_user, only: %i[destroy update]
+
   def create
     set_num = params[:score_params][:sets].to_i
     Score.add_exercise_to_scores(score_params, set_num, params[:id], current_user)
@@ -8,14 +8,13 @@ class ScoresController < ApplicationController
   end
 
   def update
-    check_params_present(score_params)
-    score = Score.find(params[:id])
-    score.update!(@params_array)
-    render json: score
+    score = current_user.scores.find(params[:id])
+    score.update!(check_params_present(score_params))
+    render status: :ok
   end
 
   def destroy
-    Score.find(params[:id]).destroy!
+    current_user.scores.find(params[:id]).destroy!
     render status: :no_content
   end
 
@@ -29,11 +28,5 @@ class ScoresController < ApplicationController
       :rpe,
       :date
     )
-  end
-
-  def check_auth_user
-    return if current_user.id == Score.find(params[:id]).user_id
-
-    raise ActionController::BadRequest, 'この項目は変更、削除できません！'
   end
 end

@@ -71,12 +71,6 @@ RSpec.describe 'measures', type: :request do
         }
       end
       it { is_expected.to eq 200 }
-      it { expect(res_body.length).to eq 23 }
-      it 'リクエストデータとレスポンスデータが一致' do
-        res_keys.each do |key|
-          expect(res_body[key]).to eq @edit_params[:measure_params][key.intern]
-        end
-      end
     end
   end
 

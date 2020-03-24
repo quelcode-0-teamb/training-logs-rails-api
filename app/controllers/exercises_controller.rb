@@ -1,6 +1,5 @@
 class ExercisesController < ApplicationController
   before_action :authorize!
-  before_action :check_auth_user, only: %i[destroy update]
 
   def create
     current_user.exercises.create(exercise_params)
@@ -13,9 +12,9 @@ class ExercisesController < ApplicationController
   end
 
   def update
-    exercise = Exercise.find(params[:id])
-    exercise.update!(exercise_params)
-    render json: exercise
+    exercise = current_user.exercises.find(params[:id])
+    exercise.update!(check_params_present(exercise_params))
+    render status: :ok
   end
 
   def index
@@ -36,11 +35,5 @@ class ExercisesController < ApplicationController
       :name,
       :category
     )
-  end
-
-  def check_auth_user
-    return if current_user.id == Exercise.find(params[:id]).user_id
-
-    raise ActionController::BadRequest, 'この種目は変更、削除できません！'
   end
 end

@@ -1,6 +1,5 @@
 class RoutinesController < ApplicationController
   before_action :authorize!
-  before_action :check_auth_user, only: %i[destroy update show]
 
   def create
     current_user.routines.create(routine_params)
@@ -8,18 +7,18 @@ class RoutinesController < ApplicationController
   end
 
   def destroy
-    Routine.find(params[:id]).destroy
+    current_user.routines.find(params[:id]).destroy
     render status: :no_content
   end
 
   def update
-    routine = Routine.find(params[:id])
+    routine = current_user.routines.find(params[:id])
     routine.update!(routine_params)
     render json: routine
   end
 
   def show
-    routine_exercise = Routine.find(params[:id]).routine_exercises.order(created_at: :asc).includes(:exercise)
+    routine_exercise = current_user.routines.find(params[:id]).routine_exercises.order(created_at: :asc).includes(:exercise)
     render json: routine_exercise, each_serializer: RoutineExercisesSerializer
   end
 

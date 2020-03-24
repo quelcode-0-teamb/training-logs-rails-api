@@ -1,5 +1,6 @@
 class ScoresController < ApplicationController
   before_action :authorize!
+
   def create
     set_num = params[:score_params][:sets].to_i
     Score.add_exercise_to_scores(score_params, set_num, params[:id], current_user)

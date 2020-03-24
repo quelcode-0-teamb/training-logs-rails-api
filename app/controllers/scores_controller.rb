@@ -3,7 +3,7 @@ class ScoresController < ApplicationController
   before_action :set_score, only: %i[destroy update]
   before_action :check_auth_user, only: %i[destroy update]
   def create
-    set_num = params[:sets].to_i
+    set_num = params[:score_params][:sets].to_i
     Score.add_exercise_to_scores(score_params, set_num, params[:id], current_user)
     render status: :created
   end

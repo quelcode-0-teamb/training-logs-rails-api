@@ -3,12 +3,12 @@ require 'pry'
 
 RSpec.describe 'Users', type: :request do
   describe '非ログイン時' do
-    context '/ GET' do
+    context 'GET /' do
       subject { get '/' }
       it { is_expected.to eq 200 }
     end
 
-    context '/sign_up POST' do
+    context 'POST /sign_up' do
       let(:params) { attributes_for(:user) }
       subject(:sign_up) { post '/sign_up', params: { "sign_up_params": params } }
       let(:res_keys) { %w[name email] }
@@ -33,7 +33,7 @@ RSpec.describe 'Users', type: :request do
       end
     end
 
-    context '/login POST' do
+    context 'POST /login' do
       let(:sign_up_params) { attributes_for(:user) }
       let(:user) { User.create(sign_up_params) }
       let(:params) do
@@ -72,7 +72,6 @@ RSpec.describe 'Users', type: :request do
   describe 'ログイン時' do
     describe 'users' do
       let(:user) { create(:user) }
-      let(:user_id) { user.id }
       let(:options) { { HTTP_AUTHORIZATION: "Bearer #{user.token}" } }
       let(:params) do
         {
@@ -86,7 +85,7 @@ RSpec.describe 'Users', type: :request do
       describe '/users/:id' do
         context 'show' do
           subject(:show_user) do
-            get "/users/#{user_id}", headers: options
+            get "/users/#{user.id}", headers: options
           end
           let(:res_body) do
             show_user
@@ -96,7 +95,7 @@ RSpec.describe 'Users', type: :request do
         end
         context 'update' do
           subject(:update_user) do
-            put "/users/#{user_id}", headers: options, params: params
+            put "/users/#{user.id}", headers: options, params: params
           end
           let(:res_body) do
             update_user
@@ -106,7 +105,7 @@ RSpec.describe 'Users', type: :request do
         end
         context 'delete' do
           subject(:delete_user) do
-            delete "/users/#{user_id}", headers: options
+            delete "/users/#{user.id}", headers: options
           end
           before { user }
           it { is_expected.to eq 204 }

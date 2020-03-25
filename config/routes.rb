@@ -23,13 +23,3 @@ Rails.application.routes.draw do
     end
   end
 end
-
-# users member
-# resource :follow, only: [:create, :destroy]
-# get :followings
-# get :followers
-
-# 
-# get 'my_follow_requests', to: 'follow_requests#my_requests'
-# delete 'my_follow_requests/:id', to: 'follow_requests#my_request_cancel'
-# resources :follow_requests, only: [:update, :destroy, :index] 

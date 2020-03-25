@@ -1,25 +1,44 @@
+# == Schema Information
+#
+# Table name: exercises
+#
+#  id         :bigint           not null, primary key
+#  category   :integer
+#  name       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  user_id    :bigint
+#
+# Indexes
+#
+#  index_exercises_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 require 'rails_helper'
 
 RSpec.describe Exercise, type: :model do
   let(:user) { create(:user) }
+  let(:exercise) { create(:exercise, user_id: user.id) }
   context 'create可能' do
     it 'user_id,name,categoryがある場合' do
-      example_exercise = build(:exercise, user_id: user.id)
-      expect(example_exercise).to be_valid
+      expect(exercise).to be_valid
     end
   end
   context 'create不可' do
     it 'user_idが無い場合' do
-      example_exercise = build(:exercise, user_id: nil)
-      expect(example_exercise).to_not be_valid
+      exercise.user_id = nil
+      expect(exercise).to_not be_valid
     end
     it 'categoryが無い場合' do
-      example_exercise = build(:exercise, user_id: user.id, category: nil)
-      expect(example_exercise).to_not be_valid
+      exercise.category = nil
+      expect(exercise).to_not be_valid
     end
     it 'nameが無い場合' do
-      example_exercise = build(:exercise, user_id: user.id, name: nil)
-      expect(example_exercise).to_not be_valid
+      exercise.name = nil
+      expect(exercise).to_not be_valid
     end
   end
 end

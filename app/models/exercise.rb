@@ -1,3 +1,22 @@
+# == Schema Information
+#
+# Table name: exercises
+#
+#  id         :bigint           not null, primary key
+#  category   :integer
+#  name       :string
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  user_id    :bigint
+#
+# Indexes
+#
+#  index_exercises_on_user_id  (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (user_id => users.id)
+#
 class Exercise < ApplicationRecord
   validates :name, presence: true, length: { maximum: 30 }
   validates :category, presence: true

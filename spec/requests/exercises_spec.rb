@@ -3,63 +3,33 @@ require 'rails_helper'
 RSpec.describe 'exercises', type: :request do
   let(:user) { create(:user) }
   let(:exercise) { create(:exercise, user_id: user.id) }
-  before do
-    @user_id = user.id
-    @exercise_id = exercise.id
-    @options = { 'HTTP_AUTHORIZATION': "Bearer #{user.token}" }
+  let(:options) { { HTTP_AUTHORIZATION: "Bearer #{user.token}" } }
+  let(:params) do
+    { "exercise_params": {
+      "name": 'edit_exercise',
+      "category": 'バーベル'
+    } }
   end
-
-  describe '/exercises POST' do
-    subject { post '/exercises', headers: @options, params: @params }
-    let(:res_body) do
-      subject
-      JSON.parse(response.body)
-    end
-    before do
-      @params = {
-        exercise_params: {
-          "name": 'example_exercise',
-          "category": 'バーベル'
-        }
-      }
-    end
+  describe 'POST /exercises' do
+    subject { post '/exercises', headers: options, params: params }
     it { is_expected.to eq 201 }
     it { expect { subject }.to change(Exercise, :count).by(+1) }
   end
 
-  describe '/exercises GET' do
-    subject { get '/exercises', headers: @options }
-    let(:res_body) do
-      subject
-      JSON.parse(response.bddy)
-    end
+  describe 'GET /exercises' do
+    subject { get '/exercises', headers: options }
     it { is_expected.to eq 200 }
   end
 
-  describe '/exercises/exercise_id DELETE' do
-    subject { delete "/exercises/#{@exercise_id}", headers: @options }
-    let(:res_body) do
-      subject
-      JSON.parse(response.body)
-    end
+  describe 'DELETE /exercises/exercise_id' do
+    subject { delete "/exercises/#{exercise.id}", headers: options }
+    before { exercise }
     it { is_expected.to eq 204 }
     it { expect { subject }.to change(Exercise, :count).by(-1) }
   end
 
-  describe '/exercises/exercise_id PUT' do
-    subject { put "/exercises/#{@exercise_id}", headers: @options, params: @edit_params }
-    let(:res_body) do
-      subject
-      JSON.parse(response.body)
-    end
-    before do
-      @edit_params = {
-        exercise_params: {
-          "name": 'edit_exercise',
-          "category": 'バーベル'
-        }
-      }
-    end
+  describe 'PUT /exercises/exercise_id' do
+    subject { put "/exercises/#{exercise.id}", headers: options, params: params }
     it { is_expected.to eq 200 }
   end
 end

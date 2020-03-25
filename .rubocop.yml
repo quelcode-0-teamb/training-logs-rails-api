@@ -9,7 +9,7 @@ AllCops:
     - "bin/bundle"
     - "test/test_helper.rb"
     - "test/channels/application_cable/connection_test.rb"
-    
+    - "lib/tasks/auto_annotate_models.rake"
 
 ######## Style ########
 # 日本語のコメントを許可する

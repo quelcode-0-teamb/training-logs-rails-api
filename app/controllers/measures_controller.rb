@@ -20,6 +20,15 @@ class MeasuresController < ApplicationController
     render status: :ok
   end
 
+  def index
+    user = User.find(params[:id])
+    if confirm_user_unpublic?(user)
+      raise(ActionController::BadRequest, '非公開ユーザーです')
+    end
+
+    render json: user.measures.order(date: :desc)
+  end
+
   private
 
   def measure_params

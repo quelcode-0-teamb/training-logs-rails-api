@@ -4,9 +4,9 @@ Rails.application.routes.draw do
   resource :sign_in, only: %i[create]
   resources :users, only: %i[update destroy show] do
     member do
-      resources :measures_index, only: %i[index]
-      resources :scores_index, only: %i[index]
-      resources :routines_index, only: %i[index]
+      resources :measures, only: %i[index]
+      resources :scores, only: %i[index]
+      resources :routines, only: %i[index]
     end
   end
   resource :routine_scores, only: %i[create]

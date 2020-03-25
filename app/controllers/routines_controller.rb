@@ -22,6 +22,15 @@ class RoutinesController < ApplicationController
     render json: routine_exercise, each_serializer: RoutineExercisesSerializer
   end
 
+  def index
+    user = User.find(params[:id])
+    if confirm_user_unpublic?(user)
+      raise(ActionController::BadRequest, '非公開ユーザーです')
+    end
+
+    render json: user.routines
+  end
+
   private
 
   def routine_params

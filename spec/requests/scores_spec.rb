@@ -32,8 +32,8 @@ RSpec.describe 'exercises', type: :request do
     it { is_expected.to eq 200 }
   end
 
-  describe 'GET /users/:user_id/scores_index' do
-    subject { get "/users/#{user.id}/scores_index", headers: options }
+  describe 'GET /users/:user_id/scores' do
+    subject { get "/users/#{user.id}/scores", headers: options }
     it { is_expected.to eq 200 }
   end
 end

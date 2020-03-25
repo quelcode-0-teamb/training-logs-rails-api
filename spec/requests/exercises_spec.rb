@@ -14,10 +14,6 @@ RSpec.describe 'exercises', type: :request do
   end
   describe '/exercises POST' do
     subject { post '/exercises', headers: options, params: params }
-    let(:res_body) do
-      subject
-      JSON.parse(response.body)
-    end
     it { is_expected.to eq 201 }
     it { expect { subject }.to change(Exercise, :count).by(+1) }
   end

@@ -25,8 +25,8 @@
 #
 FactoryBot.define do
   factory :score do
-    user { nil }
-    exercise { nil }
+    user_id { nil }
+    exercise_id { nil }
     weight { 30.0 }
     repetitions { 4 }
     interval_time { 40 }

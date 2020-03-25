@@ -36,7 +36,7 @@
 #
 FactoryBot.define do
   factory :measure do
-    association :user
+    user_id {}
     body_weight { 65.5 }
     calorie {}
     neck {}

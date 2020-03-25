@@ -21,13 +21,11 @@ require 'rails_helper'
 
 RSpec.describe Exercise, type: :model do
   let(:user) { create(:user) }
-  let(:exercise) { create(:exercise, user_id: user.id) }
-  context 'create可能' do
+  let(:exercise) { build(:exercise, user_id: user.id) }
+  describe '#valid exercise' do
     it 'user_id,name,categoryがある場合' do
       expect(exercise).to be_valid
     end
-  end
-  context 'create不可' do
     it 'user_idが無い場合' do
       exercise.user_id = nil
       expect(exercise).to_not be_valid

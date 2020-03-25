@@ -20,7 +20,7 @@
 #
 FactoryBot.define do
   factory :routine_exercise do
-    exercise { nil }
-    routine { nil }
+    exercise_id { nil }
+    routine_id { nil }
   end
 end

@@ -18,7 +18,7 @@
 #
 FactoryBot.define do
   factory :routine do
-    user { nil }
+    user_id { nil }
     name { 'キングマサの最強ルーティン' }
   end
 end

@@ -38,30 +38,30 @@ require 'rails_helper'
 
 RSpec.describe Measure, type: :model do
   let(:user) { create(:user) }
-  context 'create可能' do
-    it 'user_id,dateがある場合' do
-      example_measure = build(:measure, user_id: user.id)
-      expect(example_measure).to be_valid
+  let(:measure) { build(:measure, user_id: user.id) }
+  describe '#valid measure' do
+    context '#valid user_id' do
+      it 'user_id,dateがある場合' do
+        expect(measure).to be_valid
+      end
+      it 'user_idが無い場合' do
+        measure.user_id = nil
+        expect(measure).to_not be_valid
+      end
     end
-  end
-  context 'create不可能' do
-    it 'user_idが無い場合' do
-      example_score = build(:measure, user_id: nil)
-      expect(example_score).to_not be_valid
-    end
-    describe 'date' do
+    context '#valid date' do
       it '無い場合' do
-        example_score = build(:measure, user_id: user.id, date: nil)
-        expect(example_score).to_not be_valid
+        measure.date = nil
+        expect(measure).to_not be_valid
       end
       it '未来の場合' do
         future = Time.zone.today + 1
-        example_score = build(:measure, user_id: user.id, date: future)
-        expect(example_score).to_not be_valid
+        measure.date = future
+        expect(measure).to_not be_valid
       end
       it '西暦が2000年、以下の場合' do
-        example_score = build(:measure, user_id: user.id, date: '1999/12/31')
-        expect(example_score).to_not be_valid
+        measure.date = '1999/12/31'
+        expect(measure).to_not be_valid
       end
     end
   end

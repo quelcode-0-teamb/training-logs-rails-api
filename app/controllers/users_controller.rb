@@ -9,7 +9,7 @@ class UsersController < ApplicationController
   # ユーザー情報変更
   def update
     current_user.update!(check_params_present(user_update_params))
-    render status: :ok
+    render json: current_user
   end
 
   # ユーザー消去

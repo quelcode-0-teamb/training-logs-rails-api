@@ -8,7 +8,7 @@ class RoutineExercisesController < ApplicationController
   def destroy
     exercise = current_user.routine_exercises.find(params[:routine_exercise_id])
     exercise.destroy!
-    render :no_content
+    render status: :no_content
   end
 
   private

@@ -1,35 +1,27 @@
 require 'rails_helper'
-require 'pry'
-# インスタンス変数じゃないとうまくいかなかった。。
+
 RSpec.describe 'RoutineExercises', type: :request do
-  before do
-    @user = create(:user)
-    @exercise = create(:exercise, user: @user)
-    @routine = create(:routine, user: @user)
-    @params = {
-      "routine_exercise_params": [
-        { "exercise_id": @exercise.id },
-        { "exercise_id": @exercise.id },
-        { "exercise_id": @exercise.id }
-      ]
-    }
+  let(:user) { create(:user) }
+  let(:exercise) { create(:exercise, user_id: user.id) }
+  let(:routine) { create(:routine, user_id: user.id) }
+  let(:routine_exercise) { create(:routine_exercise, exercise_id: exercise.id, routine_id: routine.id) }
+  let(:options) { { HTTP_AUTHORIZATION: "Bearer #{user.token}" } }
+  let(:params) do
+    { "routine_exercise_params": [
+      { "exercise_id": exercise.id },
+      { "exercise_id": exercise.id },
+      { "exercise_id": exercise.id }
+    ] }
   end
-  describe 'create' do
-    subject(:routine_exercise_score) do
-      options ||= {}
-      options['HTTP_AUTHORIZATION'] = "Bearer #{@user.token}"
-      post "/routines/#{@routine.id}/routine_exercises", headers: options, params: @params
-    end
+  describe 'POST /routines/routine_id/routine_exercises' do
+    subject { post "/routines/#{routine.id}/routine_exercises", headers: options, params: params }
     it { is_expected.to eq 201 }
+    it { expect { subject }.to change(RoutineExercise, :count).by(+3) }
   end
-  describe 'destroy' do
-    let!(:routine_exercises) { create(:routine_exercise, exercise: @exercise, routine: @routine) }
-    subject(:delete_exercise_score) do
-      options ||= {}
-      options['HTTP_AUTHORIZATION'] = "Bearer #{@user.token}"
-      delete "/routines/#{@routine.id}/routine_exercises/#{routine_exercises.id}", headers: options
-    end
-    it { is_expected.to eq 200 }
-    it { expect { delete_exercise_score }.to change(RoutineExercise, :count).by(-1) }
+  describe 'DELETE /routines/routine_id/routine_exercises/:routine_exercise_id' do
+    subject { delete "/routines/#{routine.id}/routine_exercises/#{routine_exercise.id}", headers: options }
+    before { routine_exercise }
+    it { is_expected.to eq 204 }
+    it { expect { subject }.to change(RoutineExercise, :count).by(-1) }
   end
 end

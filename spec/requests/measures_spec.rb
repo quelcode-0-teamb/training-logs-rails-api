@@ -48,8 +48,8 @@ RSpec.describe 'measures', type: :request do
     it { is_expected.to eq 200 }
   end
 
-  describe 'GET /users/:user_id/measures_index' do
-    subject { get "/users/#{user.id}/measures_index", headers: options }
+  describe 'GET /users/:user_id/measures' do
+    subject { get "/users/#{user.id}/measures", headers: options }
     it { is_expected.to eq 200 }
   end
 end

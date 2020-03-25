@@ -27,8 +27,8 @@ RSpec.describe 'routine', type: :request do
     subject { put "/routines/#{routine.id}", headers: options, params: params }
     it { is_expected.to eq 200 }
   end
-  describe 'GET /users/:id/routines_index' do
-    subject { get "/users/#{user.id}/routines_index", headers: options }
+  describe 'GET /users/:id/routines' do
+    subject { get "/users/#{user.id}/routines", headers: options }
     it { is_expected.to eq 200 }
   end
 

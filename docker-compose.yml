@@ -1,0 +1,21 @@
+version: '3' # docker-composeで使用するバージョンを定義
+services: # Docker-Composeでは、アプリケーションを動かすための各要素
+  db: # services名
+    image: postgres:11.6-alpine # コンテナを実行時に元となるイメージを指定
+    restart: always # restart コンテナが停止した際の再起動設定   always 明示的に stop がされない限り、終了ステータスに関係なく常に再起動が行われる
+    volumes: # マウント・ポイント 
+      - db:/var/lib/postgresql/data
+    environment: #環境変数追加
+      POSTGRES_PASSWORD: 'root' #デフォルトのスーパーユーザーのパスワード
+      TZ: Asia/Tokyo #タイムゾーン
+  web:
+    build: . # #buildする Dockerfileのディレクトリを指定
+    command: ash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'" #ash -c コンテナ内に入る #サーバー起動
+    volumes:
+      - .:/training-logs-rails-api
+    ports: # 公開用のポート ホスト側:コンテナ側
+      - "3000:3000"
+    depends_on: # web起動時にdbを起動する
+      - db
+volumes:
+  db:

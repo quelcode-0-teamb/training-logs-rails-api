@@ -13,70 +13,50 @@ workflows:
               only: # 単独のブランチ名、もしくはブランチ名のリストを指定
                 - develop #ブランチ
 
-
 jobs:
   build:
-    working_directory: ~/repo
-    docker:
-      # Language: Ruby
-      - image: circleci/ruby:2.6.3
-        environment:
-          BUNDLE_JOBS: 3
-          BUNDLE_RETRY: 3
-          BUNDLE_PATH: vendor/bundle
-          RAILS_ENV: test
-          PGHOST: 127.0.0.1
-          PGUSER: postgres
-          REVIEWDOG_VERSION: 0.9.11
-      # DB: PostgreSQL
-      - image: circleci/postgres:11.6-alpine
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: training_logs_rails_api_test
+    machine:
+      image: circleci/classic:edge
     steps:
       - checkout
-      - run:
-          name: Install bundler
-          command: gem install bundler:2.1.4
-
       - restore_cache:
-          keys:
-            - training_logs_rails_api-{{ checksum "Gemfile.lock" }}
-            - training_logs_rails_api
-
+          key: docker-{{ checksum "docker-compose.yml" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
       - run:
-          name: Bundle Install
-          command: bundle check || bundle install --deployment
-
+          name: Setup docker-compose
+          # キャッシュの有無でif文してる
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+              docker-compose build
+              mkdir -p ~/caches
+              docker save $(docker images | awk 'NR>=2 && ! /^<none>/{print $1}') -o ~/caches/images.tar
+            else
+              docker load -i ~/caches/images.tar
+            fi
       - save_cache:
-          key: training_logs_rails_api-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
-
+          key: docker-{{ checksum "docker-compose.yml" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
       - run:
           name: Database setup
-          command: bundle exec rails db:schema:load
-
+          command: docker-compose run web rails db:create db:migrate RAILS_ENV=test
       - run:
           name: Run rspec in parallel
           command: |
             mkdir /tmp/test-results
-            bundle exec rspec --profile 10 \
+            docker-compose run web bundle exec rspec --profile 10 \
                         --format RspecJunitFormatter \
                         --out /tmp/test_results/rspec.xml \
                         --format progress \
                         $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
-
       # collect reports
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
           path: /tmp/test-results
           destination: test-results
-
       - run:
           name: Run rubocop
-          command: bundle exec rubocop
+          command: docker-compose run web bundle exec rubocop
 
   deploy-dev: #ジョブ名
     working_directory: /tmp/repo-dev

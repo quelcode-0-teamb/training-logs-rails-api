@@ -50,7 +50,5 @@ ENTRYPOINT ["entrypoint.sh"]
 EXPOSE 3000
 # 外部に公開するポートを指定
 
-RUN chmod +x $APP_ROOT/bin/start.sh
-# start.shに実行権限付与
-CMD ["bin/start.sh"]
+CMD ["rails", "server", "-p", "3000", "-b", '0.0.0.0']
 # CMD コンテナ作成後に実行するコマンドを指定

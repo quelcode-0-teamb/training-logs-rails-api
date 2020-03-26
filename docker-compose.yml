@@ -9,7 +9,7 @@ services: # Docker-Composeでは、アプリケーションを動かすための
       POSTGRES_PASSWORD: 'root' #デフォルトのスーパーユーザーのパスワード
       TZ: Asia/Tokyo #タイムゾーン
   web:
-    build: . # #buildする Dockerfileのディレクトリを指定
+    build: . #buildする Dockerfileのディレクトリを指定
     command: ash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'" #ash -c コンテナ内に入る #サーバー起動
     volumes:
       - .:/training-logs-rails-api

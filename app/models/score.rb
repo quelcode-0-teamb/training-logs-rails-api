@@ -27,7 +27,7 @@ class Score < ApplicationRecord
   validate :date_presence_check # 記録日の論理チェック　ApplicationRecordに定義
   belongs_to :user
   belongs_to :exercise
-  default_scope -> { order(date: :desc) }
+  scope :date_desc, -> { order(date: :desc, created_at: :desc) }
 
   def self.add_exercise_to_scores(score_params, set_num, exercise_id, user)
     # フロント側の負担が多すぎるのでサーバー側でeachを使い処理しました。(アンチパターンだと思うけど。。)

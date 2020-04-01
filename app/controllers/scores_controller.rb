@@ -24,7 +24,7 @@ class ScoresController < ApplicationController
       raise(ActionController::BadRequest, '非公開ユーザーです')
     end
 
-    render json: user.scores
+    render json: user.scores.date_desc
   end
 
   private

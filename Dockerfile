@@ -2,7 +2,7 @@ FROM ruby:2.6.6-alpine3.11
 #FROM 元となるイメージを指定
 
 ENV APP_ROUTE=/training-logs-rails-api \
-    RUNTIME_PACKAGES="linux-headers tzdata postgresql-dev postgresql" \
+    RUNTIME_PACKAGES="linux-headers tzdata postgresql-dev postgresql less" \
     DEV_PACKAGES="build-base libxml2-dev libc-dev curl-dev make gcc g++" \
     LANG=en_US.UTF-8 \
     BUNDLE_JOBS=4 \

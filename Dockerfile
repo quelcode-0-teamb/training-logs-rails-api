@@ -1,4 +1,4 @@
-FROM ruby:2.6.3-alpine3.9
+FROM ruby:2.6.6-alpine3.11
 #FROM 元となるイメージを指定
 
 ENV APP_ROUTE=/training-logs-rails-api \

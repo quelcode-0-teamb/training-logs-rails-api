@@ -1,0 +1,85 @@
+version: 2.1
+orbs:
+  heroku: circleci/heroku@1.0.1
+workflows:
+  rspec_auto:
+    jobs:
+      - build
+      - deploy-dev: # Workflow に付けるユニークな名前
+          requires: # ジョブの開始までに完了させるべきジョブのリストを指定
+            - build # develoy-devはbuildの後に実行を定義
+          filters: # 実行するブランチを定義付けするマップを設定
+            branches: # 実行する特定のブランチを定義するマップを設定
+              only: # 単独のブランチ名、もしくはブランチ名のリストを指定
+                - develop #ブランチ
+
+jobs:
+  build:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+      - restore_cache:
+          key: docker-{{ checksum "docker-compose.yml" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
+      - run:
+          name: Setup docker-compose
+          # キャッシュの有無でif文してる
+          command: |
+            if [ ! -f ~/caches/images.tar ]; then
+              docker-compose build
+              mkdir -p ~/caches
+              docker save $(docker images | awk 'NR>=2 && ! /^<none>/{print $1}') -o ~/caches/images.tar
+            else
+              docker load -i ~/caches/images.tar
+            fi
+      - save_cache:
+          key: docker-{{ checksum "docker-compose.yml" }}-{{ checksum "Gemfile.lock" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
+      - run:
+          name: Database setup
+          command: docker-compose run web rails db:create db:migrate RAILS_ENV=test
+      - run:
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            docker-compose run web bundle exec rspec --profile 10 \
+                        --format RspecJunitFormatter \
+                        --out /tmp/test_results/rspec.xml \
+                        --format progress \
+                        $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+      - run:
+          name: Run rubocop
+          command: docker-compose run web bundle exec rubocop
+
+  deploy-dev: #ジョブ名
+    working_directory: /tmp/repo-dev
+    docker:
+      - image: buildpack-deps:bionic
+    executor: heroku/default #　ジョブステップの実行環境を定義 # orbsのherokuを定義
+    steps:
+      - checkout
+      - heroku/install # executorで実行環境をherokuに定義したから使える
+      - run:
+          name: Mentenance mode ON #
+          command: heroku maintenance:on --app $HEROKU_APP_NAME  # 環境変数はcircleCIのwebサイトに定義してるらしい
+      - heroku/deploy-via-git: #ステップタイプ executorで定義したherokuのdeploy-via-gitを指定 中身は公式のドキュメントみて#https://circleci.com/orbs/registry/orb/circleci/heroku
+          app-name: $HEROKU_APP_NAME
+      - run:
+          name: Command run rails db:migrate
+          command: heroku run bundle exec rails db:migrate --app $HEROKU_APP_NAME
+      - run:
+          name: Command run rails db:seed_fu
+          command: |
+            heroku run bundle exec rails db:seed_fu \
+            --app $HEROKU_APP_NAME
+      - run:
+          name: Mentenance mode OFF
+          command: heroku maintenance:off --app $HEROKU_APP_NAME
+
